@@ -9,7 +9,7 @@ jest.mock('mysql', () => ({
     getConnection: jest.fn((callback) => {
       callback(null, {
         query: jest.fn((query, params, callback) => {
-          callback(null, []); // Mock hasil query
+          callback(null, []); // Mock the query result
         }),
         release: jest.fn(),
       });
@@ -46,14 +46,21 @@ describe('loginAuth', () => {
     const res = httpMocks.createResponse();
     jest.spyOn(res, 'redirect');
 
-    // Mock hasil query yang valid
+    // Mock a successful query result
     pool.getConnection.mockImplementationOnce((callback) => {
       callback(null, {
         query: jest.fn((query, params, callback) => {
-          callback(null, [{ id_user: 1, email: 'user1@example.com' }]); // Mock hasil yang valid
+          callback(null, [{ id_user: 1, email: 'user1@example.com' }]); // Mock valid result
         }),
         release: jest.fn(),
       });
+    });
+
+    // Simulate rendering a page with a table after login
+    res.render = jest.fn((view, options) => {
+      expect(view).toBe('dashboard');
+      expect(options.users).toEqual([{ id_user: 1, email: 'user1@example.com' }]);
+      expect(options.table).toBeDefined(); // Check if table data is included
     });
 
     loginController.loginAuth(req, res);
@@ -69,11 +76,11 @@ describe('loginAuth', () => {
     const res = httpMocks.createResponse();
     jest.spyOn(res, 'redirect');
 
-    // Mock hasil query kosong untuk gagal login
+    // Mock an empty result for failed login
     pool.getConnection.mockImplementationOnce((callback) => {
       callback(null, {
         query: jest.fn((query, params, callback) => {
-          callback(null, []); // Mock hasil kosong
+          callback(null, []); // Mock empty result
         }),
         release: jest.fn(),
       });
