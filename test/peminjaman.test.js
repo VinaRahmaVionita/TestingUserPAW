@@ -1,3 +1,7 @@
+const httpMocks = require('node-mocks-http');
+const bukuController = require('../src/controllers/peminjaman');  // Adjust path to your controller
+const pool = require('../src/configs/db');  // Adjust path to your db config
+
 // Fungsi yang akan diuji
 const validatePeminjaman = (id_buku, id_user, judul_buku, tgl_pinjam, tgl_kembali) => {
   if (!id_buku) return "ID Buku tidak boleh kosong.";
